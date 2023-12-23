@@ -10,11 +10,26 @@ from typing import (
 )
 # %%
 
-class board(object):
+class Letter(object):
+
+    def __init__(self, letter:str, blank_override:str = None):
+        
+        self.char: str = letter
+        self.value = LETTER_VALUES[letter]
+        self.blank_override: str | None = blank_override
+
+
+def Word(object):
+
+    def __init__(self):
+        self.letters: list[Letter]
+        self.positions: 
+
+class Board(object):
 
     def __init__(self):
         self.modifier_grid: npt.NDArray[modifier] = make_standard_grid()
-        self.grid: npt.NDArray[str | None] = np.full((15, 15), None)
+        self.grid: npt.NDArray[Letter | None] = np.full((15, 15), None)
 
     def draw(self):
         plt.figure()
@@ -44,11 +59,31 @@ class board(object):
         else:
             return False
     
-    def play_word(self, letters: list[str], positions = list[tuple[int, int]])->int:
+    def _place_letters(self, letters: list[Letter], positions = list[tuple[int, int]])->None:
+        for letter, position in zip(letters, positions):
+            if self.grid[position] is not None:
+                raise ValueError("Position in grid is not empty to place a letter")
+            self.grid[position] = letter
+
+    def _get_words_played(self, positions = list[tuple[int, int]])->set[Word]:
+        words = {}
+        for position in positions:
+            LR_word = self._get_LR_word(position)
+            words.add(LR_word)
+            UD_word = self._get_UD_word(position)
+            words.add(UD_word)
+        return words
+
+    def play_word(self, letters: list[Letter], positions = list[tuple[int, int]])->int:
         if not self._check_empty(positions):
-            raise ValueError("Position on board wasn't empty")
+            raise ValueError("Position on Board wasn't empty")
         if not self._in_line(positions):
             raise ValueError("Positions for word is not a stright line")
+
+        self._place_letters(letters, positions)
+
+        words_played = self._get_words_played(positions)
+
 
 
 class modifier(object):
@@ -119,13 +154,7 @@ def make_standard_grid()->npt.NDArray[modifier]:
 
     return grid 
 
-
-class letter(object):
-
-    def __init__(self):
-        self.value = 1
-
-letter_values = {
+LETTER_VALUES = {
     "A": 1,
     "B": 3,
     "C": 3,
@@ -156,6 +185,6 @@ letter_values = {
 }
 # %%
 
-test_board = board()
+test_Board = Board()
 
-test_board.draw()
+test_Board.draw()

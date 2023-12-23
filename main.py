@@ -13,14 +13,25 @@ from typing import (
 class board(object):
 
     def __init__(self):
-        self.grid: npt.NDArray[modifier] = make_standard_grid()
+        self.modifier_grid: npt.NDArray[modifier] = make_standard_grid()
+        self.grid: npt.NDArray[str | None] = np.full((15, 15), None)
 
     def draw(self):
         plt.figure()
-        for i, row in enumerate(self.grid):
+        for i, row in enumerate(self.modifier_grid):
             for j, point in enumerate(row):
                 plt.scatter(i, j, color = point.colour)
         plt.show()
+    
+    def _check_empty(self, positions: list[tuple[int, int]])-> bool:
+        for position in positions:
+            if self.grid[position] is not None:
+                return False
+        return True
+    
+    def play_word(self, letters: list[str], positions = list[tuple[int, int]])->int:
+        self._check_empty(positions)
+
 
 class modifier(object):
 

@@ -21,9 +21,9 @@ class Letter(object):
 
 def Word(object):
 
-    def __init__(self):
-        self.letters: list[Letter]
-        self.positions: 
+    def __init__(self, letters: list[Letter], positions: tuple[int, int]):
+        self.letters: list[Letter] = letters
+        self.positions: list[tuple[int, int]] = positions
 
 class Board(object):
 
@@ -64,6 +64,33 @@ class Board(object):
             if self.grid[position] is not None:
                 raise ValueError("Position in grid is not empty to place a letter")
             self.grid[position] = letter
+
+    def _get_LR_word(self, position: tuple[int, int])-> Word:
+        lhs = position[0]
+        if lhs >0 and self.grid[(lhs-1, position[1])] is not None:
+            can_move_left = True
+        while can_move_left:
+            lhs -= 1
+            if lhs >0 and self.grid[(lhs-1, position[1])] is not None:
+                can_move_left = True
+            
+        
+        rhs = position[0]
+        if rhs <14 and self.grid[(rhs+1, position[1])] is not None:
+            can_move_left = True
+        while can_move_left:
+            lhs -= 1
+            if rhs<14 and self.grid[(rhs+1, position[1])] is not None:
+                can_move_left = True
+        
+        x_range = list(range(lhs, rhs))
+
+        positions = [(x, position[1] for x in x_range)]
+        letters = [self.grid[position] for position in positions]
+        
+        word = Word(letters, positions)
+
+        return word
 
     def _get_words_played(self, positions = list[tuple[int, int]])->set[Word]:
         words = {}

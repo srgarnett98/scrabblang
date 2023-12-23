@@ -29,8 +29,26 @@ class board(object):
                 return False
         return True
     
+    def _in_line(self, positions: list[tuple[int, int]])->bool:
+        if len(positions) == 0:
+            raise ValueError("empty list of positions to check if in line")
+        row = positions[0][0]
+        col = positions[0][1]
+        for position in positions:
+            if position[0]!=row:
+                row = None
+            if position[1]!=col:
+                col = None
+        if row is not None or col is not None:
+            return True
+        else:
+            return False
+    
     def play_word(self, letters: list[str], positions = list[tuple[int, int]])->int:
-        self._check_empty(positions)
+        if not self._check_empty(positions):
+            raise ValueError("Position on board wasn't empty")
+        if not self._in_line(positions):
+            raise ValueError("Positions for word is not a stright line")
 
 
 class modifier(object):

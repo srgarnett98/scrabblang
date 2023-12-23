@@ -4,6 +4,8 @@ import numpy as np
 import numpy.typing as npt
 
 import matplotlib.pyplot as plt
+from matplotlib.collections import PatchCollection
+from matplotlib.patches import Rectangle
 
 from typing import (
     Literal
@@ -18,12 +20,24 @@ class Letter(object):
         self.value = LETTER_VALUES[letter]
         self.blank_override: str | None = blank_override
 
+    def __repr__(self):
+        return self.char
 
-def Word(object):
+
+class Word(object):
 
     def __init__(self, letters: list[Letter], positions: tuple[int, int]):
         self.letters: list[Letter] = letters
         self.positions: list[tuple[int, int]] = positions
+
+    def __repr__(self):
+        return ''.join([x.__repr__() for x in self.letters])
+    
+    def __eq__(self, other):
+        return self.positions==other.positions
+    
+    def __hash__(self):
+        return hash(tuple(self.positions))
 
 class Board(object):
 
@@ -32,10 +46,16 @@ class Board(object):
         self.grid: npt.NDArray[Letter | None] = np.full((15, 15), None)
 
     def draw(self):
-        plt.figure()
+        fig, ax = plt.subplots()
         for i, row in enumerate(self.modifier_grid):
             for j, point in enumerate(row):
-                plt.scatter(i, j, color = point.colour)
+                patch = Rectangle((i, j), 1, 1, facecolor = point.colour, alpha = 0.3)
+                ax.add_patch(patch)
+                if self.grid[i, j] is not None:
+                    plt.text(i+0.25, j+0.75, self.grid[i, j].char)
+        plt.ylim(0, 15)
+        plt.xlim(0,15)
+        plt.gca().invert_yaxis()
         plt.show()
     
     def _check_empty(self, positions: list[tuple[int, int]])-> bool:
@@ -67,25 +87,31 @@ class Board(object):
 
     def _get_LR_word(self, position: tuple[int, int])-> Word:
         lhs = position[0]
+        can_move_left = False
         if lhs >0 and self.grid[(lhs-1, position[1])] is not None:
             can_move_left = True
         while can_move_left:
             lhs -= 1
-            if lhs >0 and self.grid[(lhs-1, position[1])] is not None:
-                can_move_left = True
+            if lhs <=0 or self.grid[(lhs-1, position[1])] is None:
+                can_move_left = False
             
         
         rhs = position[0]
+        can_move_right = False
         if rhs <14 and self.grid[(rhs+1, position[1])] is not None:
-            can_move_left = True
-        while can_move_left:
-            lhs -= 1
-            if rhs<14 and self.grid[(rhs+1, position[1])] is not None:
-                can_move_left = True
+            can_move_right = True
+        while can_move_right:
+            rhs += 1
+            if rhs>=14 or self.grid[(rhs+1, position[1])] is None:
+                can_move_right = False
         
-        x_range = list(range(lhs, rhs))
+        x_range = list(range(lhs, rhs+1))
 
-        positions = [(x, position[1] for x in x_range)]
+        print(lhs)
+        print(rhs)
+        print(x_range)
+
+        positions = [(x, position[1]) for x in x_range]
         letters = [self.grid[position] for position in positions]
         
         word = Word(letters, positions)
@@ -94,26 +120,27 @@ class Board(object):
     
     def _get_UD_word(self, position: tuple[int, int])-> Word:
         "left = up, right = down"
-        lhs = position[0]
+        lhs = position[1]
+        can_move_left = False
         if lhs >0 and self.grid[(position[0], lhs-1)] is not None:
             can_move_left = True
         while can_move_left:
             lhs -= 1
-            if lhs >0 and self.grid[(position[0], lhs-1)] is not None:
-                can_move_left = True
+            if lhs <=0 or self.grid[(position[0], lhs-1)] is  None:
+                can_move_left = False
             
         
-        rhs = position[0]
-        if rhs <14 and self.grid[(position[1], rhs+1)] is not None:
-            can_move_left = True
-        while can_move_left:
-            lhs -= 1
-            if rhs<14 and self.grid[(position[1], rhs+1)] is not None:
-                can_move_left = True
+        rhs = position[1]
+        can_move_right = False
+        if rhs <14 and self.grid[(position[0], rhs+1)] is not None:
+            can_move_right = True
+        while can_move_right:
+            rhs += 1
+            if rhs>=14 or self.grid[(position[0], rhs+1)] is None:
+                can_move_right = False
         
-        x_range = list(range(lhs, rhs))
-
-        positions = [(x, position[1]) for x in x_range]
+        x_range = list(range(lhs, rhs+1))#
+        positions = [(position[0], x) for x in x_range]
         letters = [self.grid[position] for position in positions]
         
         word = Word(letters, positions)
@@ -121,12 +148,14 @@ class Board(object):
         return word
 
     def _get_words_played(self, positions = list[tuple[int, int]])->set[Word]:
-        words = {}
+        words = set()
         for position in positions:
             LR_word = self._get_LR_word(position)
-            words.add(LR_word)
+            if len(LR_word.letters) >1:
+                words.add(LR_word)
             UD_word = self._get_UD_word(position)
-            words.add(UD_word)
+            if len(UD_word.letters) > 1:
+                words.add(UD_word)
         return words
 
     def play_word(self, letters: list[Letter], positions = list[tuple[int, int]])->int:
@@ -151,15 +180,15 @@ class modifier(object):
 
     def _colour(self):
         if self.mult == 1:
-            colour = 'g'
+            colour = 'green'
         elif self.mult == 3 and self.type == "word":
-            colour = 'r'
+            colour = 'red'
         elif self.mult == 2 and self.type == "word":
             colour = 'orange'
         elif self.mult == 3 and self.type == "letter":
-            colour = 'b'
+            colour = 'blue'
         elif self.mult == 2 and self.type == "letter":
-            colour = "c"
+            colour = "cyan"
         return colour
         
 MODIFIER_TRIPLE_WORD = modifier(3, "word")
@@ -242,4 +271,33 @@ LETTER_VALUES = {
 
 test_Board = Board()
 
+test_word1 = {
+    (7, 7): Letter('P'),
+    (8, 7): Letter('E'),
+    (9, 7): Letter('N'),
+    (10, 7): Letter('I'),
+}
+
+test_Board._place_letters(test_word1.values(), test_word1.keys())
+
+print(test_Board._get_words_played(test_word1.keys()))
+
+# %%
+
+test_word2 = {
+    (11, 7): Letter('S'),
+    (11, 8): Letter('I'),
+    (11, 9): Letter('M'),
+    (11, 10): Letter('P'),
+}
+
+test_Board._place_letters(test_word2.values(), test_word2.keys())
+
+#%%
+
+
+print(test_Board._get_words_played(test_word2.keys()))
+# %%
+
 test_Board.draw()
+# %%

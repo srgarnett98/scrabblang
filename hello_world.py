@@ -5,39 +5,6 @@ from board import (
 )
 from stack_manip import Stack
 
-#%%
-
-def check_base_score(string:str)->int:
-    score = 0
-    for char in string:
-        score += LETTER_VALUES[char]
-    return score
-#%%
-for key, value in LETTER_VALUES.items():
-    print(key + ": " + str(value))
-
-# %%
-
-for string in [
-    "ADD",
-    "MINUS",
-    "TIMES",
-    "SET",
-]:
-    print(string + ":" + str(check_base_score(string)))
-
-# %%
-    
-
-empty_Board = Board()
-
-for i in range(-7, 8):
-    for j in range(-7, 8):
-        empty_Board.grid[(i, j)] = Letter(" ")
-
-empty_Board.draw()
-
-
 # %%
 
 hello_world_board = Board()

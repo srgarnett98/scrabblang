@@ -70,7 +70,18 @@ class Board(object):
         self.grid: dict[tuple[int, int], Letter] = {}
 
     def draw(self):
-        
+        fig, ax = plt.subplots()
+        for position, letter in self.grid.items():
+            print(position)
+            modifier = Modifier.find_modifier_at_x(position)
+            print(modifier)
+            rect = Rectangle((position[0] - 0.5, position[1] - 0.5), 1, 1, color = modifier._colour(), alpha = 0.3)
+            ax.add_patch(rect)
+            ax.relim()
+            ax.autoscale_view()
+            plt.text(position[0]-0.25, position[1]-0.25, letter.char)
+        ax.invert_yaxis()
+        plt.show()
         pass
 
     def _check_empty(self, positions: list[tuple[int, int]]) -> bool:
@@ -237,7 +248,7 @@ class Modifier(object):
 
     @classmethod
     def find_modifier_at_x(cls, position: tuple[int, int]):
-        local_position = (position[0] % 15, position[1] % 15)
+        local_position = (np.abs(position[0]) % 15, np.abs(position[1]) % 15)
 
         triple_word_coords = [
             (0, 7), (0, 8), (7, 0), (8, 0),

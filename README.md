@@ -15,22 +15,30 @@ Commands
 
 (when i say stack[pointer] i mean the value element of the stack that the pointer is currently on)
 
-"NEXT": increments the pointer by 1. Appends a 0 value and moves there if it was already at the end of the stack.
-"PREV": decrements the pointer by 1. Raises an error if it would crash into the start. I could make it also preppend a value to the stack, but I didnt!
-
-"SET": Sets stack[pointer] to the score that this word made.
-"REMOVE": Sets stack[pointer] to 0
-
-"ADD": Adds the score that this word made to stack[pointer]
-"MINUS": Subtracts the score that this word made from stack[pointer] (stack[pointer] - score)
-"TIMES": Multiplies stack[pointer] by the score that this word made
-"DIVIDE": Divides stack[pointer] by the score that this word made. python // divide
-"MODULO": Modulo's stack[pointer] by the score that this word made. python %
-
-"REPEAT": Repeats the last <score> words, with the same scores. This includes words that have no function.
-
-"IF": If stack[pointer] == 0, then the program will not perform operations until it reaches the next "ENDIF". Technically if(stack[pointer] == 0): if_depth += 1. If if_depth >0, most commands dont function.
-"ENDIF": Ends the top if level. Should act as a closing bracket to the if. No clue what behaviour is if you've done some repeats. Not my problem. Technically this decrements the if_depth.
+|"NEXT": |increments the pointer by 1. Appends a 0 value and moves there if it was already at the end of the stack.|
+|---|---|
+|"PREV": | decrements the pointer by 1. Raises an error if it would crash into the start. I could make it also preppend a value to the stack, but I didnt!|
+|---|---|
+|"SET": |Sets stack[pointer] to the score that this word made.|
+|---|---|
+|"REMOVE": |Sets stack[pointer] to 0|
+|---|---|
+|"ADD": |Adds the score that this word made to stack[pointer]|
+|---|---|
+|"MINUS": |Subtracts the score that this word made from stack[pointer] (stack[pointer] - score)|
+|---|---|
+|"TIMES": |Multiplies stack[pointer] by the score that this word made|
+|---|---|
+|"DIVIDE": |Divides stack[pointer] by the score that this word made. python // divide|
+|---|---|
+|"MODULO": |Modulo's stack[pointer] by the score that this word made. python %|
+|---|---|
+|"REPEAT": |Repeats the last <score> words, with the same scores. This includes words that have no function.|
+|---|---|
+|"IF": |If stack[pointer] == 0, then the program will not perform operations until it reaches the next "ENDIF". Technically if(stack[pointer] == 0): if_depth += 1. If if_depth >0, most commands dont function.|
+|---|---|
+|"ENDIF": |Ends the top if level. Should act as a closing bracket to the if. No clue what behaviour is if you've done some repeats. Not my problem. Technically this decrements the if_depth.|
+|---|---|
 
 "PRINT": Prints the stack as [chr(x) for x in stack]
 

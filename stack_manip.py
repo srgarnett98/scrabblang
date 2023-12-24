@@ -23,9 +23,9 @@ class Stack(object):
         self.execute_list = words
 
     def _execute_single(self, word: Word, score_arg: int):
-        string_to_execute = "".join([x.char for x in word.letters])
+        string_to_execute = "".join([x.blank_override if x.char == ' ' else x.char for x in word.letters])
+        # print(string_to_execute + " with score_arg:" + str(score_arg))
         func = self._get_func(string_to_execute)
-        print(func)
         func(score_arg)
 
     def execute(self):
@@ -70,7 +70,6 @@ class Stack(object):
 
     @if_decorator
     def _unknown(self, score_arg: int = None):
-        print("oops, unknown")
         pass
 
     @if_decorator

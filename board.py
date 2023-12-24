@@ -23,7 +23,7 @@ class Letter(object):
 
 
 class Word(object):
-    def __init__(self, letters: list[Letter], positions: tuple[int, int]):
+    def __init__(self, letters: list[Letter], positions: list[tuple[int, int]]):
         self.letters: list[Letter] = letters
         self.positions: list[tuple[int, int]] = positions
 
@@ -92,16 +92,10 @@ class Board(object):
             ax.add_patch(rect)
             ax.relim()
             ax.autoscale_view()
-            plt.text(position[0] - 0.25, position[1] - 0.25, letter.char)
+            plt.text(position[0] - 0.25, position[1] + 0.25, letter.char)
         ax.invert_yaxis()
         plt.show()
         pass
-
-    def _check_empty(self, positions: list[tuple[int, int]]) -> bool:
-        for position in positions:
-            if position in self.grid:
-                return False
-        return True
 
     def _in_line(self, positions: list[tuple[int, int]]) -> bool:
         if len(positions) == 0:
@@ -212,8 +206,9 @@ class Board(object):
     def play_word(self, word: Word) -> list[tuple[Word, int]]:
         letters = word.letters
         positions = word.positions
-        if not self._check_empty(positions):
-            raise ValueError("Position on Board wasn't empty")
+        for position in positions:
+            if position in self.grid:
+                raise ValueError("Position on Board at " + str(position) + "wasn't empty")
         if not self._in_line(positions):
             raise ValueError("Positions for word is not a stright line")
 
@@ -367,6 +362,34 @@ LETTER_VALUES = {
     "Z": 10,
     " ": 0,
 }
+
+A = Letter('A')
+B = Letter('B')
+C = Letter('C')
+D = Letter('D')
+E = Letter('E')
+F = Letter('F')
+G = Letter('G')
+H = Letter('H')
+I = Letter('I')
+J = Letter('J')
+K = Letter('K')
+L = Letter('L')
+M = Letter('M')
+N = Letter('N')
+O = Letter('O')
+P = Letter('P')
+Q = Letter('Q')
+R = Letter('R')
+S = Letter('S')
+T = Letter('T')
+U = Letter('U')
+V = Letter('V')
+W = Letter('W')
+X = Letter('X')
+Y = Letter('Y')
+Z = Letter('Z')
+
 # %%
 
 if __name__ == "__main__":

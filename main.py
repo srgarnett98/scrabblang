@@ -38,6 +38,14 @@ class Word(object):
 
     def __iter__(self):
         return iter(zip(self.letters, self.positions))
+    
+    @classmethod
+    def init_dummy(cls, string)->'Word':
+        letter_list = [Letter(x.upper()) for x in string]
+        positions = [(np.random.randint(0,14), np.random.randint(0, 14)) for x in letter_list]
+
+        return cls(letter_list, positions)
+
 
 
 class Board(object):
@@ -172,7 +180,9 @@ class Board(object):
         for position in positions:
             self.modifier_grid[position].used = True
 
-    def play_word(self, letters: list[Letter], positions=list[tuple[int, int]]) -> dict[Word, int]:
+    def play_word(self, word: Word) -> list[tuple[Word, int]]:
+        letters = word.letters
+        positions = word.positions
         if not self._check_empty(positions):
             raise ValueError("Position on Board wasn't empty")
         if not self._in_line(positions):
@@ -182,13 +192,22 @@ class Board(object):
 
         words_played = self._get_words_played(positions)
 
-        scores = {}
+        scores = []
         for word in words_played:
-            scores[word] = self._score_word(word)
+            score = self._score_word(word)
+            scores.append((word, score))
 
         self._mark_as_used(positions)
 
         return scores
+    
+    def play_game(self, words: list[Word])-> list[tuple[Word, int]]:
+        game_words = []
+        for word in words:
+            new_words = self.play_word(word)
+            game_words.extend(new_words)
+
+        return game_words
 
 
 class modifier(object):
@@ -342,8 +361,10 @@ test_word1 = {
     (10, 7): Letter("I"),
 }
 
+test_Word1 = Word(list(test_word1.values()), list(test_word1.keys()))
+
 print(test_word1)
-print(test_Board.play_word(list(test_word1.values()), list(test_word1.keys())))
+print(test_Board.play_word(test_Word1))
 
 # %%
 
@@ -353,11 +374,24 @@ test_word2 = {
     (11, 9): Letter("M"),
     (11, 10): Letter("P"),
 }
+test_Word2 = Word(list(test_word2.values()), list(test_word2.keys()))
 
 print(test_word2)
-print(test_Board.play_word(list(test_word2.values()), list(test_word2.keys())))
-
-# %%
+print(test_Board.play_word(test_Word2))
 
 test_Board.draw()
+# %%
+
+test_game = [
+    test_Word1,
+    test_Word2,
+]
+
+test_Board2 = Board()
+
+results = test_Board2.play_game(test_game)
+
+print(results)
+
+test_Board2.draw()
 # %%

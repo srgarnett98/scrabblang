@@ -75,7 +75,7 @@ class Stack(object):
     @if_decorator
     def _next(self, score_arg:int = None):
         # score arg does nothing
-        if self.pointer == len(self.stack):
+        if self.pointer == len(self.stack) - 1:
             self.stack.append(0)
         self.pointer += 1
 
@@ -128,31 +128,33 @@ class Stack(object):
         if self.if_depth > 0:
             self.if_depth -= 1
 # %%
+
+if __name__ == "__main__":
         
-test_Stack = Stack()
-test_Stack.stack = [104, 101, 108, 108, 111]
+    test_Stack = Stack()
+    test_Stack.stack = [104, 101, 108, 108, 111]
 
-test_Stack._execute_single(Word.init_dummy('ADD'), 24)
+    test_Stack._execute_single(Word.init_dummy('ADD'), 24)
 
-test_Stack._print()
+    test_Stack._print()
 
-# %%
+    # %%
 
-test_word_list = [
-    (Word.init_dummy('Minus'), 103),
-    (Word.init_dummy('IF'), 0),
-    (Word.init_dummy('Minus'), 1),
-    (Word.init_dummy('if'), 35),
-    (Word.init_dummy('add'), 25),
-    (Word.init_dummy('endif'), 14),
-    (Word.init_dummy('add'), 24),
-    (Word.init_dummy('endif'), 4),
-    (Word.init_dummy('add'), 7),
-]
+    test_word_list = [
+        (Word.init_dummy('Minus'), 103),
+        (Word.init_dummy('IF'), 0),
+        (Word.init_dummy('Minus'), 1),
+        (Word.init_dummy('if'), 35),
+        (Word.init_dummy('add'), 25),
+        (Word.init_dummy('endif'), 14),
+        (Word.init_dummy('add'), 24),
+        (Word.init_dummy('endif'), 4),
+        (Word.init_dummy('add'), 7),
+    ]
 
-test_Stack.set_execute_list(test_word_list)
-test_Stack.execute()
+    test_Stack.set_execute_list(test_word_list)
+    test_Stack.execute()
 
-test_Stack._print()
-print(test_Stack)
+    test_Stack._print()
+    print(test_Stack)
 # %%

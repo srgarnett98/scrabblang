@@ -1,7 +1,7 @@
 # %%
 import numpy as np
 
-from main import Word
+from board import Word
 
 from typing import Callable
 

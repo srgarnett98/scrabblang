@@ -5,25 +5,25 @@ from board import Word
 
 from typing import Callable
 
-#%%
-class Stack(object):
 
+# %%
+class Stack(object):
     def __init__(self):
         self.stack: list[int] = [0]
         self.pointer: int = 0
-        self.if_depth:int = 0
+        self.if_depth: int = 0
 
         self.execute_list: list[tuple[Word, int]] = []
         self.execute_list_pointer: int = 0
-    
+
     def __repr__(self):
         return [str(x) for x in self.stack].__repr__()
-    
+
     def set_execute_list(self, words: list[tuple[Word, int]]):
         self.execute_list = words
 
     def _execute_single(self, word: Word, score_arg: int):
-        string_to_execute = ''.join([x.char for x in word.letters])
+        string_to_execute = "".join([x.char for x in word.letters])
         func = self._get_func(string_to_execute)
         print(func)
         func(score_arg)
@@ -36,7 +36,7 @@ class Stack(object):
 
         self.execute_list_pointer = 0
 
-    def _get_func(self, string: str)->Callable:
+    def _get_func(self, string: str) -> Callable:
         func_dict = {
             "PRINT": self._print,
             "NEXT": self._next,
@@ -61,26 +61,27 @@ class Stack(object):
         def inner(*args, **kwargs):
             if args[0].if_depth == 0:
                 func(*args, **kwargs)
+
         return inner
 
     @if_decorator
-    def _print(self, score_arg:int = None):
-        print(''.join([chr(x) for x in self.stack]))
-    
+    def _print(self, score_arg: int = None):
+        print("".join([chr(x) for x in self.stack]))
+
     @if_decorator
-    def _unknown(self, score_arg:int = None):
+    def _unknown(self, score_arg: int = None):
         print("oops, unknown")
         pass
 
     @if_decorator
-    def _next(self, score_arg:int = None):
+    def _next(self, score_arg: int = None):
         # score arg does nothing
         if self.pointer == len(self.stack) - 1:
             self.stack.append(0)
         self.pointer += 1
 
     @if_decorator
-    def _prev(self, score_arg:int = None):
+    def _prev(self, score_arg: int = None):
         # score arg does nothing
         if self.pointer == 0:
             raise IndexError("Pointer is at 0: cannot decrement")
@@ -99,57 +100,58 @@ class Stack(object):
         self.stack[self.pointer] += score_arg
 
     @if_decorator
-    def _minus(self, score_arg:int):
+    def _minus(self, score_arg: int):
         self.stack[self.pointer] -= score_arg
 
     @if_decorator
-    def _times(self, score_arg:int):
+    def _times(self, score_arg: int):
         self.stack[self.pointer] *= score_arg
-    
+
     @if_decorator
-    def _divide(self, score_arg:int):
+    def _divide(self, score_arg: int):
         self.stack[self.pointer] = self.stack[self.pointer] // score_arg
 
     @if_decorator
-    def _modulo(self, score_arg:int):
+    def _modulo(self, score_arg: int):
         self.stack[self.pointer] = self.stack[self.pointer] % score_arg
 
     @if_decorator
-    def _repeat(self, score_arg:int):
+    def _repeat(self, score_arg: int):
         if self.execute_list_pointer < score_arg:
             raise IndexError("Repeat goes too far back")
         self.execute_list_pointer -= score_arg
 
-    def _if(self, score_arg:int = None):
+    def _if(self, score_arg: int = None):
         if not self.stack[self.pointer] or self.if_depth > 0:
             self.if_depth += 1
 
-    def _endif(self, score_arg:int = None):
+    def _endif(self, score_arg: int = None):
         if self.if_depth > 0:
             self.if_depth -= 1
+
+
 # %%
 
 if __name__ == "__main__":
-        
     test_Stack = Stack()
     test_Stack.stack = [104, 101, 108, 108, 111]
 
-    test_Stack._execute_single(Word.init_dummy('ADD'), 24)
+    test_Stack._execute_single(Word.init_dummy("ADD"), 24)
 
     test_Stack._print()
 
     # %%
 
     test_word_list = [
-        (Word.init_dummy('Minus'), 103),
-        (Word.init_dummy('IF'), 0),
-        (Word.init_dummy('Minus'), 1),
-        (Word.init_dummy('if'), 35),
-        (Word.init_dummy('add'), 25),
-        (Word.init_dummy('endif'), 14),
-        (Word.init_dummy('add'), 24),
-        (Word.init_dummy('endif'), 4),
-        (Word.init_dummy('add'), 7),
+        (Word.init_dummy("Minus"), 103),
+        (Word.init_dummy("IF"), 0),
+        (Word.init_dummy("Minus"), 1),
+        (Word.init_dummy("if"), 35),
+        (Word.init_dummy("add"), 25),
+        (Word.init_dummy("endif"), 14),
+        (Word.init_dummy("add"), 24),
+        (Word.init_dummy("endif"), 4),
+        (Word.init_dummy("add"), 7),
     ]
 
     test_Stack.set_execute_list(test_word_list)

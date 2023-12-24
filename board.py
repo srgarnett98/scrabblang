@@ -38,16 +38,23 @@ class Word(object):
 
     def __iter__(self):
         return iter(zip(self.letters, self.positions))
-    
+
     @classmethod
-    def init_dummy(cls, string)->'Word':
+    def init_dummy(cls, string) -> "Word":
         letter_list = [Letter(x.upper()) for x in string]
-        positions = [(np.random.randint(0,14), np.random.randint(0, 14)) for x in letter_list]
+        positions = [
+            (np.random.randint(0, 14), np.random.randint(0, 14)) for x in letter_list
+        ]
 
         return cls(letter_list, positions)
 
     @classmethod
-    def from_string_and_init_pos(cls, string: str, init_pos: tuple[int, int], down_or_right: Literal["down", "right"])->'Word':
+    def from_string_and_init_pos(
+        cls,
+        string: str,
+        init_pos: tuple[int, int],
+        down_or_right: Literal["down", "right"],
+    ) -> "Word":
         letter_list = [Letter(x.upper()) for x in string]
         if down_or_right == "right":
             change_index = (True, False)
@@ -55,11 +62,13 @@ class Word(object):
             change_index = (False, True)
         else:
             raise ValueError("down_or_right must be 'down' or 'right")
-        
+
         positions = []
         for i, letter in enumerate(letter_list):
-            new_pos = (init_pos[0]+i*change_index[0],
-                       init_pos[1]+i*change_index[1])
+            new_pos = (
+                init_pos[0] + i * change_index[0],
+                init_pos[1] + i * change_index[1],
+            )
             positions.append(new_pos)
 
         return cls(letter_list, positions)
@@ -72,14 +81,18 @@ class Board(object):
     def draw(self):
         fig, ax = plt.subplots()
         for position, letter in self.grid.items():
-            print(position)
             modifier = Modifier.find_modifier_at_x(position)
-            print(modifier)
-            rect = Rectangle((position[0] - 0.5, position[1] - 0.5), 1, 1, color = modifier._colour(), alpha = 0.3)
+            rect = Rectangle(
+                (position[0] - 0.5, position[1] - 0.5),
+                1,
+                1,
+                color=modifier._colour(),
+                alpha=0.3,
+            )
             ax.add_patch(rect)
             ax.relim()
             ax.autoscale_view()
-            plt.text(position[0]-0.25, position[1]-0.25, letter.char)
+            plt.text(position[0] - 0.25, position[1] - 0.25, letter.char)
         ax.invert_yaxis()
         plt.show()
         pass
@@ -116,11 +129,11 @@ class Board(object):
     def _get_LR_word(self, position: tuple[int, int]) -> Word:
         lhs = position[0]
         can_move_left = False
-        if (lhs-1, position[1]) in self.grid:
+        if (lhs - 1, position[1]) in self.grid:
             can_move_left = True
         while can_move_left:
             lhs -= 1
-            if not (lhs-1, position[1]) in self.grid:
+            if not (lhs - 1, position[1]) in self.grid:
                 can_move_left = False
 
         rhs = position[0]
@@ -180,7 +193,7 @@ class Board(object):
                 words.add(UD_word)
         return words
 
-    def _score_word(self, word: Word, new_poses: tuple[int, int])->int:
+    def _score_word(self, word: Word, new_poses: tuple[int, int]) -> int:
         score = 0
         word_mult = 1
         for letter, position in word:
@@ -214,8 +227,8 @@ class Board(object):
             scores.append((word, score))
 
         return scores
-    
-    def play_game(self, words: list[Word])-> list[tuple[Word, int]]:
+
+    def play_game(self, words: list[Word]) -> list[tuple[Word, int]]:
         game_words = []
         for word in words:
             new_words = self.play_word(word)
@@ -251,38 +264,78 @@ class Modifier(object):
         local_position = (np.abs(position[0]) % 15, np.abs(position[1]) % 15)
 
         triple_word_coords = [
-            (0, 7), (0, 8), (7, 0), (8, 0),
-            (7, 7), (7, 8), (8, 7), (8, 8),
+            (0, 7),
+            (0, 8),
+            (7, 0),
+            (8, 0),
+            (7, 7),
+            (7, 8),
+            (8, 7),
+            (8, 8),
         ]
         double_word_coords = [
             (0, 0),
-            (3, 3), (4, 4), (5, 5), (6, 6),
-            (9, 9), (10, 10), (11, 11), (12, 12),
+            (3, 3),
+            (4, 4),
+            (5, 5),
+            (6, 6),
+            (9, 9),
+            (10, 10),
+            (11, 11),
+            (12, 12),
         ]
 
         triple_letter_coords = [
-            (2, 2), (2, 6), (6, 2),
-            (9, 2), (13, 2), (13, 6),
-            (2, 9), (2, 13), (6, 13),
-            (9, 13), (13, 13), (13, 9),
+            (2, 2),
+            (2, 6),
+            (6, 2),
+            (9, 2),
+            (13, 2),
+            (13, 6),
+            (2, 9),
+            (2, 13),
+            (6, 13),
+            (9, 13),
+            (13, 13),
+            (13, 9),
         ]
         double_letter_coords = [
-            (1, 1), (0, 4), (1, 5), (4, 0), (5, 1), (4, 7), (7, 4),
-            (14, 1), (14, 5), (11, 0), (10, 1), (10, 7), (8, 4),
-            (1, 14), (0, 11), (1, 10), (5, 14), (4, 8), (7, 11),
-            (14, 14), (14, 10), (10, 14), (11, 8), (8, 11),
+            (1, 1),
+            (0, 4),
+            (1, 5),
+            (4, 0),
+            (5, 1),
+            (4, 7),
+            (7, 4),
+            (14, 1),
+            (14, 5),
+            (11, 0),
+            (10, 1),
+            (10, 7),
+            (8, 4),
+            (1, 14),
+            (0, 11),
+            (1, 10),
+            (5, 14),
+            (4, 8),
+            (7, 11),
+            (14, 14),
+            (14, 10),
+            (10, 14),
+            (11, 8),
+            (8, 11),
         ]
 
         if local_position in triple_word_coords:
-            return Modifier(3, 'word')
+            return Modifier(3, "word")
         elif local_position in double_word_coords:
-            return Modifier(2, 'word')
+            return Modifier(2, "word")
         elif local_position in triple_letter_coords:
-            return Modifier(3, 'letter')
+            return Modifier(3, "letter")
         elif local_position in double_letter_coords:
-            return Modifier(2, 'letter')
+            return Modifier(2, "letter")
         else:
-            return Modifier(1, 'letter')
+            return Modifier(1, "letter")
 
 
 LETTER_VALUES = {
@@ -317,7 +370,6 @@ LETTER_VALUES = {
 # %%
 
 if __name__ == "__main__":
-
     test_Board = Board()
 
     test_word1 = {
